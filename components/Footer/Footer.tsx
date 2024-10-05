@@ -1,5 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { PiTelegramLogoLight } from "react-icons/pi";
+
 
 const Footer = () => {
   return (
@@ -20,8 +22,8 @@ const Footer = () => {
           </div>
 
     
-          <div className="flex items-center space-x-2">
-            <Link href="" passHref>
+          <div className="flex items-center space-x-4">
+            <Link href="" target='_blank' passHref>
               <Image
                 src="/assets/common/facebookicon.svg" 
                 alt="Facebook"
@@ -29,13 +31,18 @@ const Footer = () => {
                 height={5}
               />
             </Link>
-            <Link href="" passHref>
+            <Link href="https://x.com/Localcoinsp2p" target='_blank' passHref>
               <Image
                 src="/assets/common/twiter (2).svg" 
                 alt="Twitter"
                 width={15}
                 height={13}
               />
+            </Link>
+            <Link  href="https://t.me/localcoinscommunity" target='_blank' passHref>
+             
+              <PiTelegramLogoLight className='w-[16px] h-[15px] text-white'/>
+
             </Link>
           </div>
         </div>
