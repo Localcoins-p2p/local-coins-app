@@ -160,7 +160,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">
-          Account Number
+          Name
         </label>
         <input
           type="text"
