@@ -8,6 +8,8 @@ import { gql, useMutation } from 'urql';
 import toast from 'react-hot-toast';
 import Payment from '../OnOffRamp/Payment';
 import { useRouter } from 'next/navigation';
+import { CREATE_SALE } from '../Elements/FilterPanel';
+import { BLOCKCHAIN_BASE, CURRENCY_ETH } from '@/constants';
 
 export const RAMP_AMOUNT = gql`
   mutation Mutation($amount: Float!) {
@@ -30,6 +32,22 @@ const OnRamp = () => {
     amountToSend: 0,
     amountToReceive: 0,
   });
+  const [{ fetching: creatingSale }, createSale] = useMutation(CREATE_SALE);
+
+  const getCryptoPrice = async (currency: string) => {
+    try {
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=php`
+      );
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      return { php: data?.[currency]?.php };
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  };
 
   const [conversionRate, setConversionRate] = useState<number | null>(null); // ETH to PHP conversion rate
   const [lastUpdatedField, setLastUpdatedField] = useState<'send' | 'receive'>(
@@ -97,9 +115,11 @@ const OnRamp = () => {
 
       if (result.error) {
         toast.error('Error occurred while on-ramping.');
-      } else {
-        toast.success('Successfully on-ramped.');
-        router.push("/on-ramp/proof") 
+      }
+
+      if (result.data?.matchSeller?.publicKey) {
+        const sellerKey = result.data?.matchSeller?.publicKey;
+        await createEscrow(sellerKey, amountTo.amountToReceive + '');
       }
     } catch (error) {
       console.log('ERROR', error);

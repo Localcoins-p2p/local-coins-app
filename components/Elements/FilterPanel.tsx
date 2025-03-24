@@ -60,6 +60,7 @@ export const CREATE_SALE = gql`
     $onChainSaleId: Int
     $blockchain: String!
     $currency: String!
+    $sellerPublicKey: String!
   ) {
     createSale(
       amount: $amount
@@ -71,9 +72,15 @@ export const CREATE_SALE = gql`
       onChainSaleId: $onChainSaleId
       blockchain: $blockchain
       currency: $currency
+      sellerPublicKey: $sellerPublicKey
     ) {
       amount
       buyer {
+        id
+        name
+        publicKey
+      }
+      seller {
         id
         name
         publicKey

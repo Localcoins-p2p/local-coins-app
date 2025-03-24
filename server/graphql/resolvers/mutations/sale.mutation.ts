@@ -18,9 +18,12 @@ export const createSale = isLoggedIn(
       onChainSaleId,
       blockchain,
       currency,
-    }: Prisma.Sale,
+    }: Prisma.Sale & { sellerPublicKey: string },
     { user }: IGqlContext
   ) => {
+    const seller = await prisma.user.findUnique({
+      where: { publicKey: user?.publicKey },
+    });
     await tracker.track('SALE_CREATED', null, user as Prisma.User);
     return prisma.sale.create({
       data: {
@@ -31,7 +34,8 @@ export const createSale = isLoggedIn(
         profitPercentage,
         onChainSaleId,
         screenshotMethods,
-        sellerId: user?.id as string,
+        sellerId: seller?.id as string,
+        buyerId: user?.id as string,
         currency,
         blockchain,
       },
