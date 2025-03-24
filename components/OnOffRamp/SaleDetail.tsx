@@ -73,6 +73,10 @@ export const GET_SALE = gql`
           }
         }
         screenshotMehtods
+        screenshots {
+          id
+          imageUrl
+        }
         unitPrice
       }
     }

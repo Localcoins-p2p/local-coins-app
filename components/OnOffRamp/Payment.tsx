@@ -17,7 +17,7 @@ import { gql, useMutation } from 'urql';
 import toast from 'react-hot-toast';
 import saveImages from '@/utils/saveImages';
 import { AppContext } from '@/utils/context';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // export const MATCH_SELLER_MUTATION = gql`
 //   mutation Mutation(
@@ -82,8 +82,9 @@ const Payment = ({
   const {
     context: { user },
   } = useContext(AppContext);
+  const searchParams = useSearchParams();
 
-  const saleId = user?.id;
+  const saleId = searchParams.get('saleId');
 
   const [{ fetching: addScreenshotFetching }, addScreenshotMutation] =
     useMutation(ADD_SCREENSHOT);

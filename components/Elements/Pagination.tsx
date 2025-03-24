@@ -61,7 +61,7 @@ const Pagination = ({
         onClick={() => handlePageChange(pageNumber)}
         className={`
           h-8 w-8 flex items-center justify-center rounded-full transition-all duration-200 ease-in-out
-          ${isActive ? "bg-primary text-white" : "text-white hover:bg-primary"}
+          ${isActive ? 'bg-primary text-white' : 'text-white hover:bg-primary'}
         `}
         aria-current={isActive ? 'page' : undefined}
       >

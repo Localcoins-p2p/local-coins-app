@@ -56,6 +56,11 @@ export const SELLER_SALES = gql`
       buyer {
         name
       }
+      seller {
+        id
+        name
+        publicKey
+      }
       screenshots {
         imageUrl
       }

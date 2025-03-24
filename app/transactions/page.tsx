@@ -1,3 +1,3 @@
-import Transactions from "@/components/OnOffRamp/Transactions";
+import Transactions from '@/components/OnOffRamp/Transactions';
 
 export default Transactions;

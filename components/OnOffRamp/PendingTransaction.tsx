@@ -39,12 +39,6 @@ export default function PendingTransaction({
     return () => clearInterval(interval);
   }, [minutes, seconds]);
 
-  useEffect(()=>{
-     setTimeout(()=>{
-        router.push("/transaction-confirmation")
-     }, 3000)
-  }, [])
-
   const handleAppeal = () => {
     console.log('Appeal requested');
     // Add your appeal logic here

@@ -45,8 +45,8 @@ model Screenshot {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
   saleId         String        @db.ObjectId
   imageUrl       String
-  methodId       String        @db.ObjectId
-  method         PaymentMethod @relation(fields: [methodId], references: [id])
+  methodId       String?       @db.ObjectId
+  method         PaymentMethod? @relation(fields: [methodId], references: [id])
   paidById       String        @db.ObjectId
   sale           Sale          @relation(fields: [saleId], references: [id])
   referenceId    String?       @default("")
