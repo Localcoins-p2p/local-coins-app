@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import Dropdown from '../Elements/Dropdown';
 import ShadowBox from '../Elements/ShadowBox';
-import { ArrowRight, ChevronDown, ChevronUp, MoveLeft } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronUp, LoaderCircle, MoveLeft } from 'lucide-react';
 import fdtojson from '@/utils/fdtojson';
 import { deposit } from '@/utils/base-calls';
-import { gql, useMutation } from 'urql';
+import { gql, useMutation, useQuery } from 'urql';
 
 export const CREATE_TRANSACTION = gql`
   mutation CreateTransaction(
@@ -26,16 +26,31 @@ export const CREATE_TRANSACTION = gql`
   }
 `;
 
+export const PAYMENT_METHOD = gql`
+  query Query {
+    paymentMethods {
+      accountName
+      accountNumber
+      id
+      name
+    }
+  }
+`;
+
 const NewOffRamp = ({
   setNewOffRampState,
 }: {
   setNewOffRampState: (value: boolean) => void;
 }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('php');
+  const [{ fetching: fetchingPaymentMethods, data: viewPaymentMethods }] =
+    useQuery({
+      query: PAYMENT_METHOD,
+    });
   const [{ fetching: creatingTransaction }, createTransaction] =
     useMutation(CREATE_TRANSACTION);
   const [selectedPaymentMehodOffRamp, setSelectedPaymentMehodOffRamp] =
-    useState('ETH');
+    useState('eth');
   const [offRamp, setOffRamp] = useState({
     amount: 0.0,
     currency: 'php',
@@ -46,12 +61,7 @@ const NewOffRamp = ({
   const paymentMethod = [
     { value: 'ETH', label: 'ETH', image: '/rampz/eth.png' },
   ];
-  const paymentMethodOffRamp = [
-    { value: 'GCASH', label: 'GCASH', icon: 'G' },
-    { value: 'Maya', label: 'Maya', icon: 'M' },
-    { value: 'Coins.ph', label: 'Coins.ph', icon: 'C' },
-    { value: 'GoTyme Bank', label: 'GoTyme Bank', icon: 'GB' },
-  ];
+ 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,10 +86,10 @@ const NewOffRamp = ({
           <ShadowBox className="w-[444px] bg-secondary bg-opacity-70 p-4 ">
             <ShadowBox className="bg-[#D2E1D9] flex flex-col gap-4 p-4">
               <div className="flex items-center gap-4 ">
-                <MoveLeft
+                {/* <MoveLeft
                   className="w-6 h-6 cursor-pointer"
                   onClick={() => setNewOffRampState(false)}
-                />
+                /> */}
                 <h3 className="text-primary text-custom-font-16"> Off ramp</h3>
               </div>
               <ShadowBox className="flex flex-col gap-4 p-4 bg-secondary">
@@ -116,12 +126,23 @@ const NewOffRamp = ({
                       <p className="text-cool-grey">Payment method</p>
                     </div>
                     <div>
-                      <Dropdown
-                        options={paymentMethodOffRamp}
-                        value={selectedPaymentMehodOffRamp}
-                        onChange={setSelectedPaymentMehodOffRamp}
-                        className="bg-secondary border min-w-[140px]"
-                      />
+                      {fetchingPaymentMethods ? (
+                        <LoaderCircle className=" animate-spin text-white w-8 h-8" />
+                      ) : viewPaymentMethods?.paymentMethods ? (
+                        <Dropdown 
+                          options={viewPaymentMethods?.paymentMethods?.map(
+                            (paymentMethod: any) => ({
+                              value: paymentMethod.id,
+                              label: paymentMethod.accountName,
+                            })
+                          )}
+                          value={selectedPaymentMehodOffRamp}
+                          onChange={setSelectedPaymentMehodOffRamp}
+                          className="bg-secondary border min-w-[140px]"
+                        />
+                      ) : (
+                        <div>No payment method available</div>
+                      )}
                     </div>
                   </div>
                 </ShadowBox>

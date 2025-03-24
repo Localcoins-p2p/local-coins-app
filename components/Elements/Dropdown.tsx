@@ -30,7 +30,7 @@ export default function Dropdown({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectedOption =
-    options.find((option) => option.value === value) || options[0];
+    options?.find((option) => option.value === value) || options[0];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

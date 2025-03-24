@@ -4,8 +4,7 @@ import { useState } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
 import Image from 'next/image';
 import NewOffRamp from './NewOffRamp';
-import { gql, useQuery } from 'urql';
-import Sales from '../OnOffRamp/Sales';
+import { gql, useQuery } from 'urql'; 
 import Link from 'next/link';
 import BuyButton from '../Elements/BuyButton';
 
@@ -68,7 +67,7 @@ export const SELLER_SALES = gql`
   }
 `;
 
-const OffRamp = () => {
+const Sales = () => {
   const [activeTab, setActiveTab] = useState('seller');
   const [newOffRampState, setNewOffRampState] = useState<boolean>(false);
 
@@ -221,9 +220,9 @@ const OffRamp = () => {
         </div>
       )}
 
-      <Sales />
+      
     </>
   );
 };
 
-export default OffRamp;
+export default Sales;
