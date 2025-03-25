@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ChevronDown, Check } from 'lucide-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import Login from '../Login';
-import { usePathname } from 'next/navigation'; 
+import { usePathname } from 'next/navigation';
 
 interface NavigationItem {
   name: string;
@@ -25,7 +25,7 @@ interface CryptoOption {
 const MAIN_NAVIGATION: NavigationItem[] = [
   { name: 'On ramp', href: '/on-ramp', isActive: true },
   { name: 'Off ramp', href: '/off-ramp' },
-  { name: 'Swap', href: '/swap' },
+  { name: 'Transcations', href: '/transactions' },
 ];
 
 const DROPDOWN_ITEMS: NavigationItem[] = [
@@ -61,7 +61,6 @@ export default function NewHeader() {
   const toggleMenu = useCallback(() => {
     setIsOpen((prev) => !prev);
   }, []);
- 
 
   const NavigationLink = useCallback(
     ({

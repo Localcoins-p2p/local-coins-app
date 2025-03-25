@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
+import TransactionConfirmation from './TransactionConfirmation';
+import { useRouter } from 'next/navigation';
 
 interface PendingTransactionProps {
   amount: string;
@@ -13,9 +15,11 @@ interface PendingTransactionProps {
 export default function PendingTransaction({
   amount,
   currency,
-  initialMinutes,
-  initialSeconds,
+  initialMinutes  = 14,
+  initialSeconds = 59,
 }: PendingTransactionProps) {
+
+  const router = useRouter();
   const [minutes, setMinutes] = useState(initialMinutes);
   const [seconds, setSeconds] = useState(initialSeconds);
 
@@ -42,6 +46,7 @@ export default function PendingTransaction({
 
   return (
     <>
+     
       <div className="flex items-center justify-center min-h-screen ">
         <ShadowBox className="w-[444px] bg-secondary bg-opacity-70 p-4">
           <ShadowBox className="bg-[#D2E1D9] flex flex-col gap-4 p-4 min-h-[442px]">
@@ -85,6 +90,7 @@ export default function PendingTransaction({
           </ShadowBox>
         </ShadowBox>
       </div>
+    
     </>
   );
 }

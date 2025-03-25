@@ -30,7 +30,7 @@ export default function Dropdown({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectedOption =
-    options.find((option) => option.value === value) || options[0];
+    options?.find((option) => option.value === value) || options[0];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -57,7 +57,7 @@ export default function Dropdown({
       >
         <div className="flex items-center">
           {selectedOption.icon && (
-            <div className="flex items-center justify-center w-6 h-6 mr-2 rounded-full bg-[#f58220]">
+            <div className="flex items-center justify-center w-6 h-6 mr-2 rounded-full bg-primary">
               <span className="text-white font-bold">
                 {selectedOption.icon}
               </span>
@@ -98,7 +98,7 @@ export default function Dropdown({
                   }}
                 >
                   {option.icon && (
-                    <div className="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-[#f58220]">
+                    <div className="flex items-center justify-center w-8 h-8 mr-2 p-3 rounded-full bg-primary">
                       <span className="text-white font-bold">
                         {option.icon}
                       </span>

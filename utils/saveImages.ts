@@ -8,6 +8,7 @@ export default async function saveImages(base64s: string[]) {
     const blob: unknown = new Blob([binaryData], { type: contentType });
     return put(`inputs/i-${Date.now()}-${i}.jpg`, blob as File, {
       access: 'public',
+      token: process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN,
     });
   });
   const responses = await Promise.all(promises);

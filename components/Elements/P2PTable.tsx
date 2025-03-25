@@ -81,6 +81,11 @@ export const GET_SELLER_SALES = gql`
         name
         publicKey
       }
+      seller {
+        id
+        name
+        publicKey
+      }
       canceledAt
       createdAt
       finishedAt

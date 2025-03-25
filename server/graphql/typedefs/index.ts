@@ -167,6 +167,7 @@ const typeDefs = gql`
       tx: String
       blockchain: String!
       currency: String!
+      sellerPublicKey: String!
     ): Sale
     addRemoveBuyer(id: String!, command: String!): Sale
     cancelSale(id: String!): Sale

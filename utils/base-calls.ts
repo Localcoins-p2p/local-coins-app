@@ -341,3 +341,7 @@ export const createEscrow = async (seller: string, amount: string) => {
     escrowId,
   };
 };
+
+export const withdraw = async () => {
+  return alert('withdrawEscrow');
+};

@@ -19,6 +19,7 @@ export const sellerSales = isLoggedIn(
     return prisma.sale.findMany({
       where: { sellerId: user?.id as string },
       orderBy: { canceledAt: 'desc' },
+      include: { buyer: true, seller: true, },
     });
   }
 );
@@ -28,6 +29,7 @@ export const buyerSales = isLoggedIn(
     return prisma.sale.findMany({
       where: { buyerId: user?.id as string },
       orderBy: { canceledAt: 'desc' },
+      include: { seller: true, buyer: true },
     });
   }
 );
@@ -61,7 +63,7 @@ export const transactions = isLoggedIn(
   async (_: unknown, __: unknown, { user }: IGqlContext) => {
     return prisma.transaction.findMany({
       where: {
-        userId: user?.id as string,
+        // userId: user?.id as string,
       },
     });
   }

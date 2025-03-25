@@ -16,6 +16,8 @@ export interface IUser {
   points: number;
   isAdmin?: boolean;
   paymentMethods?: PaymentMethod[];
+  balance?: number;
+  availableForWithdrawal?: number;
 }
 export interface IAppContext {
   context: {

@@ -65,7 +65,8 @@ export const sales = async (
 
   if (id && sales[0].buyerId !== user?.id) {
     sales[0].hasScreenshots = sales[0].screenshots.length > 0;
-    delete sales[0].screenshots;
+    // No Reference Requirement
+    // delete sales[0].screenshots;
     return { sales };
   } else if (id) {
     return { sales };

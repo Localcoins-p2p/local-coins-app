@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 interface TransactionConfirmationProps {
   amount: string;
@@ -16,12 +18,14 @@ export default function TransactionConfirmation({
   message,
   type,
 }: TransactionConfirmationProps) {
+
+  const router = useRouter();
   const [isDone, setIsDone] = useState(false);
 
   const handleDone = () => {
-    setIsDone(true);
-    // You could add navigation or other actions here
-    console.log('Transaction completed');
+    // setIsDone(true); 
+    toast.success('Transaction completed');
+    router.push("/")
   };
 
   return (
