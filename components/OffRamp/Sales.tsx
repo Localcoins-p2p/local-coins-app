@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
 import Image from 'next/image';
-import NewOffRamp from './NewOffRamp';
-import { gql, useQuery } from 'urql'; 
+import NewOffRamp from './OffRamp';
+import { gql, useQuery } from 'urql';
 import Link from 'next/link';
 import BuyButton from '../Elements/BuyButton';
 
@@ -219,8 +219,6 @@ const Sales = () => {
           </ShadowBox>
         </div>
       )}
-
-      
     </>
   );
 };

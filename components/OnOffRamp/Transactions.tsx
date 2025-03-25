@@ -4,7 +4,7 @@ import { useContext, useState } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
 import Image from 'next/image';
 import { gql, useQuery } from 'urql';
-import NewOffRamp from '../OffRamp/NewOffRamp';
+import NewOffRamp from '../OffRamp/OffRamp';
 import { AppContext } from '@/utils/context';
 import { ArrowRightCircle, Banknote, Wallet } from 'lucide-react';
 import Loading from '../Elements/Loading';

@@ -10,10 +10,12 @@ import {
   Trash2,
   X,
   LoaderCircle,
+  MoveLeft,
 } from 'lucide-react';
 import ShadowBox from '../Elements/ShadowBox';
 import { gql, useMutation, useQuery } from 'urql';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export const ADD_PAYMENT_METHOD = gql`
   mutation Mutation(
@@ -70,6 +72,7 @@ export const PAYMENT_METHOD = gql`
 `;
 
 function AddUpdatePaymentMethod() {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMethod, setEditingMethod] = useState<{
     id: string;
@@ -160,11 +163,18 @@ function AddUpdatePaymentMethod() {
   };
 
   return (
-    <>
-      <div className="min-h-screen ">
-        <ShadowBox className="max-w-3xl mx-auto bg-secondary bg-opacity-70 p-4 text-cool-grey ">
+     
+      <div className="min-h-screen flex items-center justify-center">
+        <ShadowBox className="w-full lg:w-[767px] mx-auto my-auto bg-secondary bg-opacity-70 p-4 text-cool-grey ">
           <ShadowBox className="bg-[#D2E1D9] p-4 ">
-            <ShadowBox className="bg-secondary p-4 min-h-[480px]">
+            <div className="flex items-center gap-2 mb-2">
+              <MoveLeft
+                className="w-6 h-6 cursor-pointer"
+                onClick={() => router.back()}
+              />
+              Go Back
+            </div>
+            <ShadowBox className="bg-secondary p-4 ">
               <div className="flex justify-between items-center mb-6">
                 <h1 className="text-base font-semibold ">Payment Methods</h1>
                 <button
@@ -178,7 +188,7 @@ function AddUpdatePaymentMethod() {
                   Add Method
                 </button>
               </div>
-              <div className="space-y-4 ">
+              <div className="space-y-4 h-[360px] overflow-y-auto">
                 {fetchingPaymentMethods ? (
                   <div className="flex items-center justify-center h-32">
                     <LoaderCircle className=" animate-spin text-white w-8 h-8" />
@@ -291,7 +301,7 @@ function AddUpdatePaymentMethod() {
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
                         }
-                        className="pl-10 w-full p-2 border border-gray-300 focus:ring-0 rounded-lg bg-green-cyan"
+                        className="pl-10 w-full p-2 border border-gray-300 text-cool-grey focus:ring-0 focus:outline-none rounded-lg bg-green-cyan"
                         placeholder="e.g. Personal Account"
                         required
                       />
@@ -315,7 +325,7 @@ function AddUpdatePaymentMethod() {
                             accountNumber: e.target.value,
                           })
                         }
-                        className="pl-10 w-full p-2 border border-gray-300 focus:ring-0 rounded-lg bg-green-cyan"
+                        className="pl-10 w-full p-2 border border-gray-300 text-cool-grey focus:ring-0 focus:outline-none rounded-lg bg-green-cyan"
                         placeholder="Enter account number"
                         required
                       />
@@ -339,7 +349,7 @@ function AddUpdatePaymentMethod() {
                             accountName: e.target.value,
                           })
                         }
-                        className="pl-10 w-full p-2 border border-gray-300 rounded-lg bg-green-cyan"
+                        className="pl-10 w-full p-2 border border-gray-300 focus:outline-none text-cool-grey rounded-lg bg-green-cyan"
                         placeholder="Enter account holder name"
                         required
                       />
@@ -362,7 +372,7 @@ function AddUpdatePaymentMethod() {
           </div>
         )}
       </div>
-    </>
+    
   );
 }
 

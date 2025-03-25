@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import Dropdown from '../Elements/Dropdown';
 import ShadowBox from '../Elements/ShadowBox';
-import { ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
-import { gql, useMutation } from 'urql';
+import { ArrowRight, ChevronDown, ChevronUp, LoaderCircle } from 'lucide-react';
+import { gql, useMutation, useQuery } from 'urql';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { BLOCKCHAIN_BASE, CURRENCY_ETH } from '@/constants';
@@ -20,9 +20,46 @@ export const RAMP_AMOUNT = gql`
   }
 `;
 
+export const GET_PAYMENT_METHOD = gql`
+  query Query {
+    paymentMethods {
+      accountName
+      accountNumber
+      id
+      name
+    }
+  }
+`;
+
+// const GET_PAYMENT_METHOD = gql`
+//   query Sales($salesId: String) {
+//     sales(id: $salesId) {
+//       sales {
+//         id
+//         seller {
+//           id
+//           paymentMethods {
+//             accountName
+//             accountNumber
+//             id
+//             name
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
+
 const OnRamp = () => {
   const router = useRouter();
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('php');
+
+  const [{ fetching: fetchingPaymentMethods, data: viewPaymentMethods }] =
+  useQuery({
+    query: GET_PAYMENT_METHOD,
+  });
+
+
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
   const [selectedPaymentMehodToSend, setSelectedPaymentMehodToSend] =
     useState('php');
   const [selectedPaymentMehodToRecieve, setSelectedPaymentMehodToRecieve] =
@@ -181,13 +218,34 @@ const OnRamp = () => {
                     <p className="text-cool-grey">Payment method</p>
                   </div>
                   <div>
+                      {fetchingPaymentMethods ? (
+                        <LoaderCircle className=" animate-spin text-white w-8 h-8" />
+                      ) : viewPaymentMethods?.paymentMethods ? (
+                        <Dropdown
+                          options={viewPaymentMethods?.paymentMethods?.map(
+                            (paymentMethod: any) => ({
+                              value: paymentMethod.id,
+                              label: paymentMethod.name,
+                            })
+                          )}
+                          value={selectedPaymentMethod}
+                          onChange={setSelectedPaymentMethod}
+                          className="bg-secondary border min-w-[140px]"
+                        />
+                      ) : (
+                        <p className="text-cool-grey  text-right text-sm">
+                          No payment method available
+                        </p>
+                      )}
+                    </div>
+                  {/* <div>
                     <Dropdown
                       options={paymentMethod}
                       value={selectedPaymentMethod}
                       onChange={setSelectedPaymentMethod}
                       className="bg-secondary border min-w-[140px]"
                     />
-                  </div>
+                  </div> */}
                 </div>
               </ShadowBox>
               <ShadowBox className="bg-green-cyan rounded-lg">

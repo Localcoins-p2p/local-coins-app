@@ -49,14 +49,14 @@ export default function RootLayout({
   if (wallet === 'metamask') {
     return (
       <html lang="en">
-        <body className={inter.className + ' '}>
+        <body className={inter.className + ' bg-black'}>
           <Toaster />
           <SessionProvider>
             <AppContext.Provider value={{ context, setUser, setFetching }}>
               {
                 <Provider value={client}>
                   <NewHeader />
-                  <BackgroundImage />
+                  {/* <BackgroundImage /> */}
                   <SetContext />
                   {children}
                   {(context as any).fetching && <AppLoading />}
