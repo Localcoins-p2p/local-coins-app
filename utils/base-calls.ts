@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { contractAddress, escrowABI } from './base';
 import Web3Modal from 'web3modal';
+import web3 from 'web3';
 
 export const getConnection = async () => {
   const web3Modal = new Web3Modal();
@@ -342,6 +343,35 @@ export const createEscrow = async (seller: string, amount: string) => {
   };
 };
 
-export const withdraw = async () => {
-  return alert('withdrawEscrow');
-};
+export async function withdraw(amountInEth: string) {
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, escrowABI, signer);
+
+    const amountInWei = ethers.utils.parseEther(amountInEth);
+
+    const tx = await contract.withdraw(amountInWei);
+    await tx.wait();
+
+    console.log(`Withdrawal of ${amountInEth} ETH successful!`);
+  } catch (error) {
+    console.error("Error withdrawing:", error);
+  }
+}
+
+export async function getUserBalance(userAddress: string) {
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const contract = new ethers.Contract(
+    contractAddress,
+    escrowABI,
+    signer
+  );
+      const balance = await contract.userBalances(userAddress);
+      return web3.utils.fromWei(balance, "ether");
+  } catch (error) {
+      console.error("Error fetching user balance:", error);
+  }
+}
