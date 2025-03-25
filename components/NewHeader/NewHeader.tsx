@@ -115,7 +115,7 @@ export default function NewHeader() {
             })}
 
             {/* More Dropdown */}
-            <div className="relative group">
+            {/* <div className="relative group">
               <button
                 className="px-3 py-2 rounded-lg text-custom-font-16 font-medium text-secondary hover:text-primary inline-flex items-center transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-blue-500"
                 aria-haspopup="true"
@@ -143,7 +143,7 @@ export default function NewHeader() {
                   })}
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Right side Crypto Selector */}
@@ -257,13 +257,13 @@ export default function NewHeader() {
               className="block w-full"
             />
           ))}
-          {DROPDOWN_ITEMS.map((item) => (
+          {/* {DROPDOWN_ITEMS.map((item) => (
             <NavigationLink
               key={item.href}
               {...item}
               className="block w-full"
             />
-          ))}
+          ))} */}
         </div>
       </div>
     </nav>

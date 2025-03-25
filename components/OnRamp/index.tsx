@@ -333,7 +333,7 @@ const OnRamp = () => {
             </div>
             <button
               onClick={handleOnRamp} // onClick handler add karein
-              className="bg-primary hover:bg-secondary hover:text-white disabled:bg-gray-500 disabled:cursor-not-allowed disabled:hover:text-secondary px-4 py-2 rounded-lg text-custom-font-16 w-full transition-colors duration-200"
+              className="bg-primary hover:bg-secondary hover:text-white disabled:bg-gray-500 disabled:cursor-not-allowed  px-4 py-2 rounded-lg text-custom-font-16 w-full transition-colors duration-200"
               disabled={
                 fetchingRampAmount ||
                 amountTo.amountToReceive <= 0 ||

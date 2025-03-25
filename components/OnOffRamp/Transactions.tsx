@@ -10,6 +10,7 @@ import { ArrowRightCircle, Banknote, Wallet } from 'lucide-react';
 import Loading from '../Elements/Loading';
 import { getUserBalance, withdraw } from '@/utils/base-calls';
 import toast from 'react-hot-toast';
+import moment from 'moment';
 
 export const TRANSACTIONS = gql`
   query Query {
@@ -112,7 +113,7 @@ const Transactions = () => {
                             <th className="px-4 py-4 text-left">Amount</th>
                             <th className="px-4 py-4 text-left">Quantity</th>
                             {/* <th className="px-4 py-4 text-left">Status</th> */}
-                            <th className="px-4 py-4 text-left">Order No</th>
+                            <th className="px-4 py-4 text-left">Created at</th>
                           </tr>
                         </thead>
                         <tbody className="bg-primary divide-y divide-black whitespace-nowrap">
@@ -138,7 +139,7 @@ const Transactions = () => {
                                     Unfilled
                                   </td> */}
                                   <td className="px-4 py-4 text-left font-semibold">
-                                    {txn.id}
+                                  {moment(txn.createdAt).format('YYYY-MM-DD HH:mm:ss')}
                                   </td>
                                 </tr>
                               )

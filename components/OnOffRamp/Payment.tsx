@@ -103,7 +103,7 @@ const Payment = ({
     context: { user },
   } = useContext(AppContext);
 
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(''); 
   const [{ fetching: fetchingPaymentMethods, data: viewPaymentMethods }] =
     useQuery({
       query: GET_PAYMENT_METHOD,
@@ -117,6 +117,12 @@ const Payment = ({
   const valueSelectedPaymentMethod = paymentMethods?.find(
     (paymentMethod: any) => paymentMethod.id === selectedPaymentMethod
   );
+
+  useEffect(() => {
+    if (paymentMethods?.length > 0 && !selectedPaymentMethod) {
+      setSelectedPaymentMethod(paymentMethods[0].id);
+    }
+  }, [paymentMethods]);
 
   const [{ fetching: addScreenshotFetching }, addScreenshotMutation] =
     useMutation(ADD_SCREENSHOT);
@@ -144,23 +150,31 @@ const Payment = ({
   //     setSelectedImage(sale.screenshots[0].imageUrl);
   //   }
   // }, [sale]);
+ 
+
   const handleAddScreenshot = async (imageUrl: string, method: string) => {
     try {
-      // if (toCurrency.name === 'ETH' || toCurrency.name === 'eth') {
+       // if (toCurrency.name === 'ETH' || toCurrency.name === 'eth') {
       //   await markPaid(sale.onChainSaleId);
       // }
-      if (imageUrl.indexOf('vercel') === -1) {
-        await addScreenshotMutation({
-          saleId: saleId,
-          imageUrl,
-          referenceId: '',
-          method: '',
-        });
+      const response = await addScreenshotMutation({
+        saleId: saleId,
+        imageUrl,
+        referenceId: '',
+        method: method,
+      });
+
+      if (response.error) {
+        // Show error toast if there's an error in the response
+        toast.error(`Failed to add screenshot`);
+      } else {
+        // Show success toast and redirect if successful
+        toast.success('Screenshot added successfully');
+        router.push('/on-ramp/pending-transaction');
       }
-      toast.success('Screenshot added successfully');
-      router.push('/on-ramp/pending-transaction');
     } catch (error) {
-      toast.error('Failed to add screenshot');
+      // Handle any unexpected errors
+      toast.error('An unexpected error occurred. Please try again.');
     }
   };
 
@@ -254,13 +268,14 @@ const Payment = ({
                 Cancel
               </button>
               <button
+               disabled={addScreenshotFetching}
                 onClick={
                   // () => {
                   //   takeReferenceNumber(image);
                   // }
                   () => {
                     selectedImage
-                      ? handleAddScreenshot(image, '')
+                      ? handleAddScreenshot(image, selectedPaymentMethod)
                       : toast.error('Please upload the proof image first.');
                   }
                 }
