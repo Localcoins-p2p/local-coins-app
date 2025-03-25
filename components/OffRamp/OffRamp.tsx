@@ -10,6 +10,7 @@ import { gql, useMutation, useQuery } from 'urql';
 import { useRouter } from 'next/navigation';
 import { AppContext } from '@/utils/context';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export const CREATE_TRANSACTION = gql`
   mutation CreateTransaction(
@@ -83,13 +84,27 @@ const OffRamp = ({
       alert('Please enter a valid amount');
       return;
     }
-    const { tx } = await deposit(amount);
-    createTransaction({
-      blockchain: 'base',
-      amount: parseFloat(amount),
-      currency: 'eth',
-      tx: tx.hash,
-    });
+
+    try {
+      const { tx } = await deposit(amount);
+      const result = await createTransaction({
+        blockchain: 'base',
+        amount: parseFloat(amount),
+        currency: 'eth',
+        tx: tx.hash,
+      });
+
+      if (result.error) {
+        toast.error(`Failed to create transaction`); // Throw error if mutation fails
+        return;
+      }
+
+      toast.success('Transaction successful!'); // Show success toast
+      router.push('/transactions'); // Redirect to transactions page
+    } catch (error) {
+      toast.error(`Failed to create transaction`); // Show error toast
+    }
+ 
   };
 
   return (
@@ -143,17 +158,17 @@ const OffRamp = ({
                   </div>
                 </ShadowBox>
 
-                <div className="flex gap-1 items-center">
+                <div className="flex flex-col gap-1 ">
                   <p className=" ">You can receive fiat in your</p>
-                  <p>({' '}
-                    {paymentMethods?.map((paymentMethod: any) =>
-                      paymentMethod.name
-                    ).join(", ")} 
-                  {' '})</p>
+                  <p className='flex items-center gap-2'>{' '}
+                    {paymentMethods?.map((paymentMethod: any, index: number) => (
+                      <span key={index} className='bg-primary px-2 py-0.5 font-medium text-white rounded-lg'>{paymentMethod.name}</span>
+                    ) )} 
+                  {' '}</p>
                 </div>
-                <div>
+                <div className='text-sm'>
                   You can manage your payment methods{' '}
-                  <Link href="/payment-methods" className='underline text-blue-500 cursor-pointer'>here</Link>
+                  <Link href="/payment-methods" className='underline text-white cursor-pointer'>here</Link>
                 </div>
             
                 {/* <ShadowBox className="rounded-lg">
@@ -216,7 +231,9 @@ const OffRamp = ({
                   />
                 </ShadowBox> */}
               </ShadowBox>
-              <button className="bg-primary hover:bg-secondary hover:text-white px-4 py-2 rounded-lg text-custom-font-16 w-full transition-colors duration-200">
+              <button 
+              disabled={creatingTransaction}
+              className="bg-primary hover:bg-secondary hover:text-white px-4 py-2 rounded-lg text-custom-font-16 w-full transition-colors duration-200 disabled:cursor-not-allowed">
                 Off ramp
               </button>
             </ShadowBox>
