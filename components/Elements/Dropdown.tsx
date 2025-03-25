@@ -29,7 +29,7 @@ export default function Dropdown({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const selectedOption =
+  const selectedOption: typeof options[0] | undefined =
     options?.find((option) => option.value === value) || options[0];
 
   useEffect(() => {
@@ -56,24 +56,24 @@ export default function Dropdown({
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center">
-          {selectedOption.icon && (
+          {selectedOption?.icon && (
             <div className="flex items-center justify-center w-6 h-6 mr-2 rounded-full bg-primary">
               <span className="text-white font-bold">
                 {selectedOption.icon}
               </span>
             </div>
           )}
-          {selectedOption.image && (
+          {selectedOption?.image && (
             <div className="flex items-center justify-center w-6 h-6 mr-2 rounded-full ">
               <Image
                 src={selectedOption.image}
-                alt={selectedOption.label}
+                alt={selectedOption?.label}
                 width={20}
                 height={20}
               />
             </div>
           )}
-          <span className="text-sm font-medium">{selectedOption.label}</span>
+          <span className="text-sm font-medium">{selectedOption?.label}</span>
         </div>
         <ChevronDown
           className={`ml-2 h-5 w-5 transition-transform ${

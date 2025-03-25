@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
 import Image from 'next/image';
 import { gql, useQuery } from 'urql';
@@ -8,7 +8,8 @@ import NewOffRamp from '../OffRamp/OffRamp';
 import { AppContext } from '@/utils/context';
 import { ArrowRightCircle, Banknote, Wallet } from 'lucide-react';
 import Loading from '../Elements/Loading';
-import { withdraw } from '@/utils/base-calls';
+import { getUserBalance, withdraw } from '@/utils/base-calls';
+import toast from 'react-hot-toast';
 
 export const TRANSACTIONS = gql`
   query Query {
@@ -28,8 +29,18 @@ const Transactions = () => {
   const {
     context: { user },
   } = useContext(AppContext);
+  const [availableForWithdrawal, setAvailableForWithdrawal] = useState<string>();
 
-  console.log(user, ':user');
+  function handleAvailableForWithdrawalBalance () {
+    getUserBalance(user?.publicKey as string)
+    .then((balance) => {
+      setAvailableForWithdrawal(balance);
+    });
+  }
+
+  useEffect(() => {
+    handleAvailableForWithdrawalBalance();
+  }, [user]);
 
   const [
     {
@@ -68,13 +79,19 @@ const Transactions = () => {
                   <p className="text-white text-xs font-medium">
                     Available For Withdrawal:
                     <span className="font-semibold text-sm ml-1">
-                      {user?.availableForWithdrawal ?? 0}
+                      {availableForWithdrawal ? parseFloat(availableForWithdrawal)?.toFixed(6) : 0}
                     </span>
                   </p>
                 </div>
 
                 <button
-                  onClick={withdraw}
+                  onClick={() => {
+                    withdraw(availableForWithdrawal as string)
+                    .then(() => {
+                      toast.success('Withdrawal successful!');
+                      handleAvailableForWithdrawalBalance();
+                    })
+                  }}
                   className="px-4 py-2 flex items-center gap-2 rounded-lg bg-gradient-to-r from-primary to-primary/80 border border-primary font-medium text-sm text-white hover:scale-105 transition-all duration-200"
                 >
                   Withdrawal <ArrowRightCircle className="h-5 w-5" />

@@ -613,6 +613,10 @@ const OrderComponent: React.FC<OrderComponentProps> = ({
             {isSeller
               ? 'Please check your account to confirm the payment. Once the buyer has uploaded the screenshot, you will see Confirm Payment button. Click on that button and enter reference id.'
               : 'After payment, remember to click the &apos;Transferred, Notify Seller&apos; button to facilitate the crypto release by the seller.'}
+            {
+              isSeller
+              ? <button>Release Payment</button> : null
+            }
           </p>
           {showConfirmPaymentSentButton && (
             <div className="flex justify-between ml-4">

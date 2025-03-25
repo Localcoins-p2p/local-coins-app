@@ -34,6 +34,7 @@ import { BN } from '@project-serum/anchor';
 import useSolana from '@/utils/useSolana';
 import Loading from '../Elements/Loading';
 import {
+  completeEscrow,
   confirmPayment,
   markPaid,
   raiseBuyerDispute,
@@ -230,8 +231,8 @@ const SaleDetail = () => {
   const firstTimeLoading = !sale && fetching;
 
   const isSeller = user?.id === sale?.seller?.id;
-  const isBuyer = false;
-  // const isBuyer = user?.id === sale?.buyer?.id;
+  //const isBuyer = false;
+  const isBuyer = user?.id === sale?.buyer?.id;
 
   console.log(isSeller, 'isSeller');
   console.log(isBuyer, 'isBuyer');
@@ -1057,6 +1058,15 @@ const SaleDetail = () => {
                     'Please check your account to confirm the payment. Once the buyer has uploaded the screenshot, you will see Confirm Payment button. Click on that button and enter reference id.'}
                   {isBuyer &&
                     'After payment, remember to click the &apos;Transferred, Notify Seller&apos; button to facilitate the crypto release by the seller.'}
+                {
+              isSeller
+              ? <button className='bg-white'
+                  onClick={() => {
+                    alert(sale.onChainSaleId);
+                    completeEscrow(parseInt(sale.onChainSaleId));
+                  }}
+              >Release Payment</button> : null
+            }
                 </p>
                 {showConfirmPaymentSentButton && (
                   <div className="flex justify-between ">

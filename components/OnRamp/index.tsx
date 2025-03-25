@@ -138,7 +138,7 @@ const OnRamp = () => {
 
       if (result.data?.matchSeller?.publicKey) {
         const sellerKey = result.data?.matchSeller?.publicKey;
-        await createEscrow(sellerKey, amountTo.amountToReceive + '');
+        const chainData = await createEscrow(sellerKey, amountTo.amountToReceive + '');
         // security issue: take unit price from backend
         const prices = await getCryptoPrice('ethereum');
         const response = await createSale({
@@ -147,7 +147,7 @@ const OnRamp = () => {
           isFloating: false,
           profitPercentage: 0,
           screenshotMethods: [],
-          onChainSaleId: 0,
+          onChainSaleId: chainData.escrowId,
           tx: '',
           blockchain: BLOCKCHAIN_BASE,
           currency: CURRENCY_ETH,
