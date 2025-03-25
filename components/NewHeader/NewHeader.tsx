@@ -25,6 +25,7 @@ interface CryptoOption {
 const MAIN_NAVIGATION: NavigationItem[] = [
   { name: 'On ramp', href: '/on-ramp', isActive: true },
   { name: 'Off ramp', href: '/off-ramp' },
+  { name: 'Sales', href: '/sales' },
   { name: 'Transcations', href: '/transactions' },
 ];
 

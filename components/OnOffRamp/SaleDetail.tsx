@@ -756,7 +756,7 @@ const SaleDetail = () => {
                         <div className="flex items-center gap-2">
                           <DollarSign size={16} className="" />
                           <span className=" font-medium">
-                            {(sale?.amount * sale?.unitPrice) / toCurrency?.x}{' '}
+                            {((sale?.amount * sale?.unitPrice) / toCurrency?.x).toFixed(2)}{' '}
                             {getFromCurrency().name}
                           </span>
                         </div>
@@ -786,7 +786,7 @@ const SaleDetail = () => {
                         <div className="flex items-center gap-2">
                           <BrickWall size={16} className="" />
                           <span className=" font-medium capitalize">
-                            {sale?.amount / toCurrency?.x} {toCurrency?.name}
+                            {(sale?.amount / toCurrency?.x).toFixed(6)} {toCurrency?.name}
                           </span>
                         </div>
                       </div>
