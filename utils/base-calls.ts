@@ -375,3 +375,19 @@ export async function getUserBalance(userAddress: string) {
       console.error("Error fetching user balance:", error);
   }
 }
+
+export async function completeEscrow(escrowId: number) {
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, escrowABI, signer);
+
+    // Send transaction to complete the escrow
+    const tx = await contract.completeEscrow(escrowId);
+    await tx.wait(); // Wait for transaction confirmation
+
+    console.log(`Escrow ID ${escrowId} completed successfully!`);
+  } catch (error) {
+    console.error("Error completing escrow:", error);
+  }
+}
