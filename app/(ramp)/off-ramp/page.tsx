@@ -1,3 +1,3 @@
-import NewOffRamp from "@/components/OffRamp/NewOffRamp";
+import OffRamp from '@/components/OffRamp/OffRamp';
 
-export default NewOffRamp
+export default OffRamp;
