@@ -41,11 +41,7 @@ export const PAYMENT_METHOD = gql`
   }
 `;
 
-const OffRamp = ({
-  setNewOffRampState,
-}: {
-  setNewOffRampState: (value: boolean) => void;
-}) => {
+const OffRamp = ({ setNewOffRampState }: any) => {
   const router = useRouter();
 
   const {
@@ -55,7 +51,6 @@ const OffRamp = ({
   const paymentMethods = user?.paymentMethods;
 
   console.log(user, 'userAccount');
- 
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
   const [{ fetching: fetchingPaymentMethods, data: viewPaymentMethods }] =
@@ -104,7 +99,6 @@ const OffRamp = ({
     } catch (error) {
       toast.error(`Failed to create transaction`); // Show error toast
     }
- 
   };
 
   return (
@@ -130,7 +124,7 @@ const OffRamp = ({
                 </button> */}
               </div>
               <ShadowBox className="flex flex-col gap-4 p-4 bg-secondary text-cool-grey">
-              <ShadowBox className="bg-green-cyan rounded-lg">
+                <ShadowBox className="bg-green-cyan rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
                       <p className="text-cool-grey text-sm">Off ramp amount</p>
@@ -160,17 +154,30 @@ const OffRamp = ({
 
                 <div className="flex flex-col gap-1 ">
                   <p className=" ">You can receive fiat in your</p>
-                  <p className='flex items-center gap-2'>{' '}
-                    {paymentMethods?.map((paymentMethod: any, index: number) => (
-                      <span key={index} className='bg-primary px-2 py-0.5 font-medium text-white rounded-lg'>{paymentMethod.name}</span>
-                    ) )} 
-                  {' '}</p>
+                  <p className="flex items-center gap-2">
+                    {' '}
+                    {paymentMethods?.map(
+                      (paymentMethod: any, index: number) => (
+                        <span
+                          key={index}
+                          className="bg-primary px-2 py-0.5 font-medium text-white rounded-lg"
+                        >
+                          {paymentMethod.name}
+                        </span>
+                      )
+                    )}{' '}
+                  </p>
                 </div>
-                <div className='text-sm'>
+                <div className="text-sm">
                   You can manage your payment methods{' '}
-                  <Link href="/payment-methods" className='underline text-white cursor-pointer'>here</Link>
+                  <Link
+                    href="/payment-methods"
+                    className="underline text-white cursor-pointer"
+                  >
+                    here
+                  </Link>
                 </div>
-            
+
                 {/* <ShadowBox className="rounded-lg">
                   <div className="flex items-center justify-between gap-1">
                     <p className="text-cool-grey whitespace-nowrap">
@@ -231,9 +238,10 @@ const OffRamp = ({
                   />
                 </ShadowBox> */}
               </ShadowBox>
-              <button 
-              disabled={creatingTransaction}
-              className="bg-primary hover:bg-secondary hover:text-white px-4 py-2 rounded-lg text-custom-font-16 w-full transition-colors duration-200 disabled:cursor-not-allowed">
+              <button
+                disabled={creatingTransaction}
+                className="bg-primary hover:bg-secondary hover:text-white px-4 py-2 rounded-lg text-custom-font-16 w-full transition-colors duration-200 disabled:cursor-not-allowed"
+              >
                 Off ramp
               </button>
             </ShadowBox>

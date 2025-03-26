@@ -30,11 +30,11 @@ const Transactions = () => {
   const {
     context: { user },
   } = useContext(AppContext);
-  const [availableForWithdrawal, setAvailableForWithdrawal] = useState<string>();
+  const [availableForWithdrawal, setAvailableForWithdrawal] =
+    useState<string>();
 
-  function handleAvailableForWithdrawalBalance () {
-    getUserBalance(user?.publicKey as string)
-    .then((balance) => {
+  function handleAvailableForWithdrawalBalance() {
+    getUserBalance(user?.publicKey as string).then((balance) => {
       setAvailableForWithdrawal(balance);
     });
   }
@@ -70,7 +70,7 @@ const Transactions = () => {
                   <p className="text-white text-xs font-medium">
                     Balance:
                     <span className="font-semibold text-sm ml-1">
-                      {user?.balance ?? 0}
+                      {user?.balance ? user?.balance?.toFixed(6) : 0}
                     </span>
                   </p>
                 </div>
@@ -80,18 +80,19 @@ const Transactions = () => {
                   <p className="text-white text-xs font-medium">
                     Available For Withdrawal:
                     <span className="font-semibold text-sm ml-1">
-                      {availableForWithdrawal ? parseFloat(availableForWithdrawal)?.toFixed(6) : 0}
+                      {availableForWithdrawal
+                        ? parseFloat(availableForWithdrawal)?.toFixed(6)
+                        : 0}
                     </span>
                   </p>
                 </div>
 
                 <button
                   onClick={() => {
-                    withdraw(availableForWithdrawal as string)
-                    .then(() => {
+                    withdraw(availableForWithdrawal as string).then(() => {
                       toast.success('Withdrawal successful!');
                       handleAvailableForWithdrawalBalance();
-                    })
+                    });
                   }}
                   className="px-4 py-2 flex items-center gap-2 rounded-lg bg-gradient-to-r from-primary to-primary/80 border border-primary font-medium text-sm text-white hover:scale-105 transition-all duration-200"
                 >
@@ -139,7 +140,9 @@ const Transactions = () => {
                                     Unfilled
                                   </td> */}
                                   <td className="px-4 py-4 text-left font-semibold">
-                                  {moment(txn.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                                    {moment(txn.createdAt).format(
+                                      'YYYY-MM-DD HH:mm:ss a'
+                                    )}
                                   </td>
                                 </tr>
                               )
