@@ -17,15 +17,14 @@ export default function TransactionConfirmation({
   currency,
   message,
   type,
-}: TransactionConfirmationProps) {
-
+}: any) {
   const router = useRouter();
   const [isDone, setIsDone] = useState(false);
 
   const handleDone = () => {
-    // setIsDone(true); 
+    // setIsDone(true);
     toast.success('Transaction completed');
-    router.push("/")
+    router.push('/');
   };
 
   return (
