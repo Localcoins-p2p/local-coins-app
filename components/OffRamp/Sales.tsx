@@ -3,9 +3,8 @@
 import { useState } from 'react';
 import ShadowBox from '../Elements/ShadowBox';
 import Image from 'next/image';
-import NewOffRamp from './NewOffRamp';
+import NewOffRamp from './OffRamp';
 import { gql, useQuery } from 'urql';
-import Sales from '../OnOffRamp/Sales';
 import Link from 'next/link';
 import BuyButton from '../Elements/BuyButton';
 
@@ -68,7 +67,7 @@ export const SELLER_SALES = gql`
   }
 `;
 
-const OffRamp = () => {
+const Sales = () => {
   const [activeTab, setActiveTab] = useState('seller');
   const [newOffRampState, setNewOffRampState] = useState<boolean>(false);
 
@@ -87,20 +86,20 @@ const OffRamp = () => {
 
   return (
     <>
-      {newOffRampState ? (
+      {/* {newOffRampState ? (
         <NewOffRamp setNewOffRampState={setNewOffRampState} />
-      ) : (
+      ) : ( */}
         <div className="flex items-center justify-center min-h-screen">
           <ShadowBox className="bg-secondary bg-opacity-70 w-[722px] p-4">
             <ShadowBox className="bg-[#D2E1D9] flex flex-col gap-4 p-4 ">
               <div className="flex items-center justify-between">
                 <h4 className="text-custom-font-16 text-secondary">Sales</h4>
-                <button
+                {/* <button
                   onClick={() => setNewOffRampState(true)}
                   className="px-4 py-2 rounded-lg bg-primary bg-opacity-50 border border-primary font-medium text-base leading-[100%]"
                 >
                   + New off ramp
-                </button>
+                </button> */}
               </div>
               <ShadowBox className="bg-secondary p-4">
                 <div className="h-[395px] overflow-y-auto">
@@ -219,11 +218,9 @@ const OffRamp = () => {
             </ShadowBox>
           </ShadowBox>
         </div>
-      )}
-
-      <Sales />
+      {/* )} */}
     </>
   );
 };
 
-export default OffRamp;
+export default Sales;

@@ -74,3 +74,14 @@ export const sales = async (
 
   return { sales: sales.slice(0, take), count };
 };
+
+export const availablePaymentMethods = async (
+  _: unknown,
+  { id }: { id: string },
+  { user }: IGqlContext
+) => {
+  const paymentMethods = await prisma.paymentMethod.findMany({});
+  const names = paymentMethods.map((method) => method.name);
+  const uniqueNames = Array.from(new Set(names));
+  return uniqueNames;
+}

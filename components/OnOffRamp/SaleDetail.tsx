@@ -14,6 +14,7 @@ import {
   BrickWall,
   ChevronDown,
   Eye,
+  LoaderCircle,
 } from 'lucide-react';
 
 import Image from 'next/image';
@@ -34,6 +35,7 @@ import { BN } from '@project-serum/anchor';
 import useSolana from '@/utils/useSolana';
 import Loading from '../Elements/Loading';
 import {
+  completeEscrow,
   confirmPayment,
   markPaid,
   raiseBuyerDispute,
@@ -230,8 +232,8 @@ const SaleDetail = () => {
   const firstTimeLoading = !sale && fetching;
 
   const isSeller = user?.id === sale?.seller?.id;
-  const isBuyer = false;
-  // const isBuyer = user?.id === sale?.buyer?.id;
+  //const isBuyer = false;
+  const isBuyer = user?.id === sale?.buyer?.id;
 
   console.log(isSeller, 'isSeller');
   console.log(isBuyer, 'isBuyer');
@@ -679,17 +681,6 @@ const SaleDetail = () => {
 
   const markingDisputed = _markingDisputed || disputeLoading;
 
-  if (firstTimeLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-primary">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="h-10 w-40 bg-custom-green-medium/30 rounded mb-4"></div>
-          <div className="h-64 w-96 bg-custom-green-medium/20 rounded"></div>
-        </div>
-      </div>
-    );
-  }
-
   if (getSaleError) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-primary">
@@ -711,8 +702,15 @@ const SaleDetail = () => {
               <span>Back</span>
             </button>
 
-            <ShadowBox className="bg-secondary flex flex-col gap-4 p-4 ">
-              {/* <CryptoReleaseTime
+            <ShadowBox className="bg-secondary flex flex-col gap-4 p-4 min-h-[500px]">
+              {firstTimeLoading ? (
+                <div className='flex items-center justify-center h-12'>
+                  <LoaderCircle className="animate-spin w-8 h-8 text-white" />
+
+                </div>
+              ) : (
+                <>
+                  {/* <CryptoReleaseTime
                 title={
                   isSeller
                     ? 'Please Release Crypto'
@@ -722,7 +720,7 @@ const SaleDetail = () => {
                 }
                 className="bg-primary"
               /> */}
-              {/* <ShadowBox className="flex items-center justify-between  text-secondary bg-primary rounded-lg">
+                  {/* <ShadowBox className="flex items-center justify-between  text-secondary bg-primary rounded-lg">
                 <div>
                   <div className="text-xs uppercase mb-1">Transaction ID</div>
                   <div className="flex items-center gap-2">
@@ -746,438 +744,474 @@ const SaleDetail = () => {
                 </span>
               </ShadowBox> */}
 
-              <div className="flex gap-4">
-                {/* Left side - Sale info */}
-                <div className="flex-1 flex flex-col gap-4 max-w-[19rem] ">
-                  <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="text-xs flex-col gap-1">
-                        <div className=" uppercase ">Fiat Amount</div>
-                        <div className="flex items-center gap-2">
-                          <DollarSign size={16} className="" />
-                          <span className=" font-medium">
-                            {(sale?.amount * sale?.unitPrice) / toCurrency?.x}{' '}
-                            {getFromCurrency().name}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="text-xs flex-col gap-1">
-                        <div className=" uppercase ">Unit Price</div>
-                        <div className="flex items-center gap-2">
-                          <CreditCard size={16} className="" />
-                          <span className=" font-medium">
-                            {sale?.unitPrice} {getFromCurrency().name}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="text-xs flex-col gap-1">
-                        <div className=" uppercase ">Payment Method</div>
-                        <div className="flex items-center gap-2">
-                          <Layers size={16} className="" />
-                          <span className=" font-medium capitalize">
-                            {sale?.blockchain || 'N/A'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-xs flex flex-col gap-1">
-                        <div className=" uppercase ">Receive Quantity</div>
-                        <div className="flex items-center gap-2">
-                          <BrickWall size={16} className="" />
-                          <span className=" font-medium capitalize">
-                            {sale?.amount / toCurrency?.x} {toCurrency?.name}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </ShadowBox>
-
-                  <div className="flex flex-col gap-4">
-                    {isSeller && (
-                      <div className="flex flex-col gap-1 text-xs text-white">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-primary rounded-full" />
-                          <h2 className=" font-medium">
-                            {(sale?.amount * sale?.unitPrice) / toCurrency?.x}{' '}
-                            PHP transfer to{' '}
-                            {paymentMethods[selectedPaymentMethodIndex]?.name}
-                          </h2>
-                        </div>
-
-                        <p className="">
-                          Funds will be transfered to one of the payment methods
-                          below.
-                        </p>
-                      </div>
-                    )}
-                    {isBuyer && (
-                      <div className="flex flex-col gap-1 text-xs text-white">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-primary rounded-full" />
-                          <h2 className=" font-medium">
-                            Open{' '}
-                            {paymentMethods[selectedPaymentMethodIndex]?.name}{' '}
-                            to transfer{' '}
-                            {(sale?.amount * sale?.unitPrice) / toCurrency?.x}{' '}
-                            PHP
-                          </h2>
-                        </div>
-                        <p className="">
-                          Transfer the funds to the seller&apos;s account
-                          provided below.
-                        </p>
-                      </div>
-                    )}
-                    <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
-                      <div className="space-y-3">
-                        <div>
-                          <div className="flex justify-between items-center mb-2">
-                            <div className="flex flex-col gap-1 text-xs">
-                              <p className="uppercase">Payment Method Name</p>
-                              <span className="">
-                                {paymentMethods[selectedPaymentMethodIndex]
-                                  ?.name || 'N/A'}
+                  <div className="flex gap-4">
+                    {/* Left side - Sale info */}
+                    <div className="flex-1 flex flex-col gap-4 max-w-[19rem] ">
+                      <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="text-xs flex-col gap-1">
+                            <div className=" uppercase ">Fiat Amount</div>
+                            <div className="flex items-center gap-2">
+                              <DollarSign size={16} className="" />
+                              <span className=" font-medium">
+                                {(
+                                  (sale?.amount * sale?.unitPrice) /
+                                  toCurrency?.x
+                                ).toFixed(2)}{' '}
+                                {getFromCurrency().name}
                               </span>
                             </div>
+                          </div>
 
-                            {isDropdownVisible ? (
-                              <div className="flex items-center border justify-center border-[#4D4D4D] rounded-[5px] px-1 ">
-                                <Select
-                                  className="w-[100px]"
-                                  options={options}
-                                  styles={customStyles}
-                                  isSearchable={false}
-                                  components={{
-                                    DropdownIndicator: () => (
-                                      <ChevronDown
-                                        size={14}
-                                        className="text-secondary"
-                                      />
-                                    ),
-                                  }}
-                                  onChange={handleChangePaymentMethod}
-                                />
-                              </div>
-                            ) : (
-                              <button
-                                className="text-secondary"
-                                onClick={handleChangeClick}
-                              >
-                                Change
-                              </button>
-                            )}
-                          </div>
-                          <div className="text-xs  uppercase ">
-                            Account Name
-                          </div>
-                          <div className="text-xs ">
-                            {paymentMethods[selectedPaymentMethodIndex]
-                              ?.accountName || 'N/A'}
-                          </div>
-                        </div>
-
-                        <div>
-                          <div className="text-xs  uppercase ">
-                            Account Number
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="text-xs ">
-                              {paymentMethods[selectedPaymentMethodIndex]
-                                ?.accountNumber || 'N/A'}
+                          <div className="text-xs flex-col gap-1">
+                            <div className=" uppercase ">Unit Price</div>
+                            <div className="flex items-center gap-2">
+                              <CreditCard size={16} className="" />
+                              <span className=" font-medium">
+                                {sale?.unitPrice} {getFromCurrency().name}
+                              </span>
                             </div>
-                            <button
-                              onClick={() =>
-                                copyToClipboard(
-                                  paymentMethods?.accountNumber || '',
-                                  'Account Number'
-                                )
-                              }
-                              className=" hover:text-white transition-all"
+                          </div>
+
+                          <div className="text-xs flex-col gap-1">
+                            <div className=" uppercase ">Payment Method</div>
+                            <div className="flex items-center gap-2">
+                              <Layers size={16} className="" />
+                              <span className=" font-medium capitalize">
+                                {sale?.blockchain || 'N/A'}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-xs flex flex-col gap-1">
+                            <div className=" uppercase ">Receive Quantity</div>
+                            <div className="flex items-center gap-2">
+                              <BrickWall size={16} className="" />
+                              <span className=" font-medium capitalize">
+                                {(sale?.amount / toCurrency?.x).toFixed(6)}{' '}
+                                {toCurrency?.name}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </ShadowBox>
+
+                      <div className="flex flex-col gap-4">
+                        {isSeller && (
+                          <div className="flex flex-col gap-1 text-xs text-white">
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 bg-primary rounded-full" />
+                              <h2 className=" font-medium">
+                                {(sale?.amount * sale?.unitPrice) /
+                                  toCurrency?.x}{' '}
+                                PHP transfer to{' '}
+                                {
+                                  paymentMethods[selectedPaymentMethodIndex]
+                                    ?.name
+                                }
+                              </h2>
+                            </div>
+
+                            <p className="">
+                              Funds will be transfered to one of the payment
+                              methods below.
+                            </p>
+                          </div>
+                        )}
+                        {isBuyer && (
+                          <>
+                            <div className="flex flex-col gap-1 text-xs text-white">
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-primary rounded-full" />
+                                <h2 className=" font-medium">
+                                  Open{' '}
+                                  {
+                                    paymentMethods[selectedPaymentMethodIndex]
+                                      ?.name
+                                  }{' '}
+                                  to transfer{' '}
+                                  {(sale?.amount * sale?.unitPrice) /
+                                    toCurrency?.x}{' '}
+                                  PHP
+                                </h2>
+                              </div>
+                              <p className="">
+                                Transfer the funds to the seller&apos;s account
+                                provided below.
+                              </p>
+                            </div>
+
+                            <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
+                              <div className="space-y-3">
+                                <div>
+                                  <div className="flex justify-between items-center mb-2">
+                                    <div className="flex flex-col gap-1 text-xs">
+                                      <p className="uppercase">
+                                        Payment Method Name
+                                      </p>
+                                      <span className="">
+                                        {paymentMethods[
+                                          selectedPaymentMethodIndex
+                                        ]?.name || 'N/A'}
+                                      </span>
+                                    </div>
+
+                                    {isDropdownVisible ? (
+                                      <div className="flex items-center border justify-center border-[#4D4D4D] rounded-[5px] px-1 ">
+                                        <Select
+                                          className="w-[100px]"
+                                          options={options}
+                                          styles={customStyles}
+                                          isSearchable={false}
+                                          components={{
+                                            DropdownIndicator: () => (
+                                              <ChevronDown
+                                                size={14}
+                                                className="text-secondary"
+                                              />
+                                            ),
+                                          }}
+                                          onChange={handleChangePaymentMethod}
+                                        />
+                                      </div>
+                                    ) : (
+                                      <button
+                                        className="text-secondary"
+                                        onClick={handleChangeClick}
+                                      >
+                                        Change
+                                      </button>
+                                    )}
+                                  </div>
+                                  <div className="text-xs  uppercase ">
+                                    Account Name
+                                  </div>
+                                  <div className="text-xs ">
+                                    {paymentMethods[selectedPaymentMethodIndex]
+                                      ?.accountName || 'N/A'}
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <div className="text-xs  uppercase ">
+                                    Account Number
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="text-xs ">
+                                      {paymentMethods[
+                                        selectedPaymentMethodIndex
+                                      ]?.accountNumber || 'N/A'}
+                                    </div>
+                                    <button
+                                      onClick={() =>
+                                        copyToClipboard(
+                                          paymentMethods?.accountNumber || '',
+                                          'Account Number'
+                                        )
+                                      }
+                                      className=" hover:text-white transition-all"
+                                    >
+                                      <Copy size={14} />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </ShadowBox>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Right side - Payment proof */}
+                    <div className="flex-1 flex flex-col gap-4 max-w-[19rem] ">
+                      <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
+                        <p className="text-xs uppercase ">Transaction Hash</p>
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <div className="font-mono text-sm truncate max-w-[300px]">
+                              {sale?.tx || 'N/A'}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() =>
+                                  copyToClipboard(
+                                    sale?.tx || '',
+                                    'Transaction Hash'
+                                  )
+                                }
+                                className=" hover:text-white transition-all"
+                              >
+                                <Copy size={14} />
+                              </button>
+                              <a
+                                href={`https://etherscan.io/tx/${sale?.tx}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className=" hover:text-white transition-all"
+                              >
+                                <ExternalLink size={14} />
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </ShadowBox>
+
+                      <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
+                        <div className="text-xs  uppercase mb-0.5">
+                          Counterparty
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full border border-secondary flex items-center justify-center">
+                            <User size={18} className="" />
+                          </div>
+                          <div>
+                            <div className="font-medium">
+                              {counterparty?.name || 'N/A'}
+                            </div>
+                            <div className="flex items-center gap-2 text-xs font-mono ">
+                              <p className="max-w-[170px] overflow-hidden truncate">
+                                {counterparty?.publicKey || 'N/A'}{' '}
+                              </p>
+                              <button
+                                onClick={() =>
+                                  copyToClipboard(
+                                    counterparty?.publicKey || '',
+                                    'Counterparty Public Key'
+                                  )
+                                }
+                                className="hover:text-white transition-all"
+                              >
+                                <Copy size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </ShadowBox>
+
+                      <div className="flex flex-col gap-3">
+                        <h2 className="font-medium text-white ">
+                          Payment Proof
+                        </h2>
+
+                        {isSeller && (
+                          <>
+                            <h2 className="text-xs text-white">
+                              Check the proof sent from the buyer.
+                            </h2>
+                            <div
+                              className="relative w-full h-[180px] rounded-lg  cursor-pointer"
+                              onClick={() => setIsModalOpen(true)}
                             >
-                              <Copy size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </ShadowBox>
-                  </div>
-                </div>
-
-                {/* Right side - Payment proof */}
-                <div className="flex-1 flex flex-col gap-4 max-w-[19rem] ">
-                  <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
-                    <p className="text-xs uppercase ">Transaction Hash</p>
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <div className="font-mono text-sm truncate max-w-[300px]">
-                          {sale?.tx || 'N/A'}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() =>
-                              copyToClipboard(
-                                sale?.tx || '',
-                                'Transaction Hash'
-                              )
-                            }
-                            className=" hover:text-white transition-all"
-                          >
-                            <Copy size={14} />
-                          </button>
-                          <a
-                            href={`https://etherscan.io/tx/${sale?.tx}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className=" hover:text-white transition-all"
-                          >
-                            <ExternalLink size={14} />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </ShadowBox>
-
-                  <ShadowBox className="bg-primary text-secondary p-4 rounded-lg">
-                    <div className="text-xs  uppercase mb-0.5">
-                      Counterparty
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full border border-secondary flex items-center justify-center">
-                        <User size={18} className="" />
-                      </div>
-                      <div>
-                        <div className="font-medium">
-                          {counterparty?.name || 'N/A'}
-                        </div>
-                        <div className="flex items-center gap-2 text-xs font-mono ">
-                          <p className="max-w-[170px] overflow-hidden truncate">
-                            {counterparty?.publicKey || 'N/A'}{' '}
-                          </p>
-                          <button
-                            onClick={() =>
-                              copyToClipboard(
-                                counterparty?.publicKey || '',
-                                'Counterparty Public Key'
-                              )
-                            }
-                            className="hover:text-white transition-all"
-                          >
-                            <Copy size={14} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </ShadowBox>
-
-                  <div className="flex flex-col gap-3">
-                    <h2 className="font-medium text-white ">Payment Proof</h2>
-
-                    {isSeller && (
-                      <>
-                        <h2 className="text-xs text-white">
-                          Check the proof sent from the buyer.
-                        </h2>
-                        <div
-                          className="relative w-full h-[180px] rounded-lg  cursor-pointer"
-                          onClick={() => setIsModalOpen(true)}
-                        >
-                          <Image
-                            src={
-                              sale?.screenshots?.[0]?.imageUrl ||
-                              '/rampz/wait.png'
-                            }
-                            alt="ETH"
-                            width={100}
-                            height={180}
-                            className="object-fill w-full h-full rounded-lg"
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center text-white gap-3">
-                            <Eye className="w-6 h-6 " />
-                            <h3 className="text-base font-medium leading-[100%]">
-                              {' '}
-                              See Proof
-                            </h3>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                    {isBuyer && (
-                      <>
-                        <h2 className="text-xs text-white">
-                          Upload the image and notify the seller
-                        </h2>
-                        <label
-                          htmlFor="proof-upload"
-                          className="relative bg-primary  text-white rounded-lg h-[180px] w-full flex items-center justify-center cursor-pointer transition-colors"
-                        >
-                          <div className="absolute inset-0 flex items-center justify-center text-white gap-3">
-                            <PlusIcon />
-                            <span className="font-medium">Upload Proof</span>
-                          </div>
-                          <input
-                            id="proof-upload"
-                            type="file"
-                            className="hidden"
-                            onChange={handleImageChange}
-                            accept="image/*"
-                          />
-                          {selectedImage && ( // Display the selected image if available
-                            <Image
-                              src={selectedImage} // Create a URL for the selected file
-                              alt="Selected Proof"
-                              width={169} // Set width to fit the button
-                              height={169} // Set height to fit the button
-                              className="object-fill w-full h-full rounded-lg" // Style the image
-                            />
-                          )}
-                          {/* Display selected file name if any */}
-                          {/* {selectedImage && (
+                              <Image
+                                src={
+                                  sale?.screenshots?.[0]?.imageUrl ||
+                                  '/rampz/wait.png'
+                                }
+                                alt="ETH"
+                                width={100}
+                                height={180}
+                                className="object-fill w-full h-full rounded-lg"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center text-white gap-3">
+                                <Eye className="w-6 h-6 " />
+                                <h3 className="text-base font-medium leading-[100%]">
+                                  {' '}
+                                  See Proof
+                                </h3>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        {isBuyer && (
+                          <>
+                            <h2 className="text-xs text-white">
+                              Upload the image and notify the seller
+                            </h2>
+                            <label
+                              htmlFor="proof-upload"
+                              className="relative bg-primary  text-white rounded-lg h-[180px] w-full flex items-center justify-center cursor-pointer transition-colors"
+                            >
+                              <div className="absolute inset-0 flex items-center justify-center text-white gap-3">
+                                <PlusIcon />
+                                <span className="font-medium">
+                                  Upload Proof
+                                </span>
+                              </div>
+                              <input
+                                id="proof-upload"
+                                type="file"
+                                className="hidden"
+                                onChange={handleImageChange}
+                                accept="image/*"
+                              />
+                              {selectedImage && ( // Display the selected image if available
+                                <Image
+                                  src={selectedImage} // Create a URL for the selected file
+                                  alt="Selected Proof"
+                                  width={169} // Set width to fit the button
+                                  height={169} // Set height to fit the button
+                                  className="object-fill w-full h-full rounded-lg" // Style the image
+                                />
+                              )}
+                              {/* Display selected file name if any */}
+                              {/* {selectedImage && (
                             <div className="absolute bottom-2 px-2 text-sm text-secondary max-w-sm truncate">
                               {selectedImage.name}
                             </div>
                           )} */}
-                        </label>
-                      </>
-                    )}
+                            </label>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-2 ">
-                <div className="w-3 h-3 bg-primary rounded-full" />
-                <p className="text-white">
-                  {isSeller ? 'Check your accounts' : 'Notify Seller'}
-                </p>
-              </div>
+                  <div className="flex items-center gap-2 ">
+                    <div className="w-3 h-3 bg-primary rounded-full" />
+                    <p className="text-white">
+                      {isSeller ? 'Check your accounts' : 'Notify Seller'}
+                    </p>
+                  </div>
 
-              <div className="flex flex-col gap-4">
-                <p className="text-white text-xs">
-                  {isSeller &&
-                    'Please check your account to confirm the payment. Once the buyer has uploaded the screenshot, you will see Confirm Payment button. Click on that button and enter reference id.'}
-                  {isBuyer &&
-                    'After payment, remember to click the &apos;Transferred, Notify Seller&apos; button to facilitate the crypto release by the seller.'}
-                </p>
-                {showConfirmPaymentSentButton && (
-                  <div className="flex justify-between ">
-                    <button
-                      disabled={addScreenshotFetching}
-                      className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 pr-10 flex gap-2 rounded-lg transition-colors"
-                      onClick={
-                        // () => {
-                        //   takeReferenceNumber(image);
-                        // }
-                        () => {
-                          selectedImage
-                            ? handleAddScreenshot(image, '')
-                            : toast.error(
-                                'Please upload the proof image first.'
-                              );
-                        }
-                      }
-                    >
-                      {/* <div>
+                  <div className="flex flex-col gap-4">
+                    <p className="text-white text-xs">
+                      {isSeller &&
+                        'Please check your account to confirm the payment. Once the buyer has uploaded the screenshot, you will see Confirm Payment button. Click on that button and enter reference id.'}
+                      {isBuyer &&
+                        'After payment, remember to click the &apos;Transferred, Notify Seller&apos; button to facilitate the crypto release by the seller.'}
+                      {isSeller ? (
+                        <button
+                          className="bg-white"
+                          onClick={() => {
+                            alert(sale.onChainSaleId);
+                            completeEscrow(parseInt(sale.onChainSaleId));
+                          }}
+                        >
+                          Release Payment
+                        </button>
+                      ) : null}
+                    </p>
+                    {showConfirmPaymentSentButton && (
+                      <div className="flex justify-between ">
+                        <button
+                          disabled={addScreenshotFetching}
+                          className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 pr-10 flex gap-2 rounded-lg transition-colors"
+                          onClick={
+                            // () => {
+                            //   takeReferenceNumber(image);
+                            // }
+                            () => {
+                              selectedImage
+                                ? handleAddScreenshot(image, '')
+                                : toast.error(
+                                    'Please upload the proof image first.'
+                                  );
+                            }
+                          }
+                        >
+                          {/* <div>
                                 {loading ? (
                                   <Loading width="5" height="5" color="#333" />
                                 ) : (
                                   <div className="w-5 h-5" />
                                 )}
                               </div> */}
-                      <span>Transfered, Notify Seller</span>
-                    </button>
-                    <div className="flex justify-between  gap-4">
-                      {showBuyerDisputeButton && (
-                        <button
-                          className=" bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 rounded-lg transition-colors"
-                          onClick={handleBuyerDispute}
-                        >
-                          Dispute
+                          <span>Transfered, Notify Seller</span>
                         </button>
-                      )}
-                      <button
-                        className="bg-red-500 hover:bg-red-600 text-white  py-2 px-4 rounded-lg transition-colors"
-                        onClick={handleBuyerCancel}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {showConfirmPaymentReceivedButton && (
-                  <div className="flex flex-wrap justify-between gap-4">
-                    {hideConfirmButtonShowDisputes ? (
-                      <p className="text-white text-xs max-w-sm">
-                        Waiting for buyer to send you payment screenshot. Once
-                        you receive the payment, you will see the confirm button
-                        here.
-                      </p>
-                    ) : (
-                      <button
-                        className="bg-primary hover:bg-primary/90 text-secondary hover:text-white py-2 px-4 rounded-lg flex gap-2 transition-colors"
-                        onClick={confirmPaymentReceived}
-                      >
-                        <div>
-                          {fetching ? (
-                            <Loading width="5" height="5" color="#333" />
-                          ) : (
-                            <div className="w-5 h-5" />
+                        <div className="flex justify-between  gap-4">
+                          {showBuyerDisputeButton && (
+                            <button
+                              className=" bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 rounded-lg transition-colors"
+                              onClick={handleBuyerDispute}
+                            >
+                              Dispute
+                            </button>
                           )}
+                          <button
+                            className="bg-red-500 hover:bg-red-600 text-white  py-2 px-4 rounded-lg transition-colors"
+                            onClick={handleBuyerCancel}
+                          >
+                            Cancel
+                          </button>
                         </div>
-                        <span>Confirm Payment Received</span>
-                      </button>
+                      </div>
                     )}
-                    <div className="flex gap-4">
-                      {showSellerDisputeButton && (
+                    {showConfirmPaymentReceivedButton && (
+                      <div className="flex flex-wrap justify-between gap-4">
+                        {hideConfirmButtonShowDisputes ? (
+                          <p className="text-white text-xs max-w-sm">
+                            Waiting for buyer to send you payment screenshot.
+                            Once you receive the payment, you will see the
+                            confirm button here.
+                          </p>
+                        ) : (
+                          <button
+                            className="bg-primary hover:bg-primary/90 text-secondary hover:text-white py-2 px-4 rounded-lg flex gap-2 transition-colors"
+                            onClick={confirmPaymentReceived}
+                          >
+                            <div>
+                              {fetching ? (
+                                <Loading width="5" height="5" color="#333" />
+                              ) : (
+                                <div className="w-5 h-5" />
+                              )}
+                            </div>
+                            <span>Confirm Payment Received</span>
+                          </button>
+                        )}
+                        <div className="flex gap-4">
+                          {showSellerDisputeButton && (
+                            <button
+                              className=" bg-primary hover:bg-primary/90 text-secondary hover:text-white py-2 px-4 rounded-lg  transition-colors"
+                              onClick={handleSellerDispute}
+                            >
+                              Dispute
+                            </button>
+                          )}
+                          <button
+                            className="bg-red-500 hover:bg-red-600 text-white  py-2 px-4 rounded-lg transition-colors"
+                            onClick={handleSellerCancel}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {showClaimPaymentButton && (
+                      <div className="flex justify-between ">
                         <button
-                          className=" bg-primary hover:bg-primary/90 text-secondary hover:text-white py-2 px-4 rounded-lg  transition-colors"
-                          onClick={handleSellerDispute}
+                          className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 pr-10 flex gap-2 rounded-lg transition-colors"
+                          onClick={handleClaimPayment}
                         >
-                          Dispute
-                        </button>
-                      )}
-                      <button
-                        className="bg-red-500 hover:bg-red-600 text-white  py-2 px-4 rounded-lg transition-colors"
-                        onClick={handleSellerCancel}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {showClaimPaymentButton && (
-                  <div className="flex justify-between ">
-                    <button
-                      className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 pr-10 flex gap-2 rounded-lg transition-colors"
-                      onClick={handleClaimPayment}
-                    >
-                      {/* <div>
+                          {/* <div>
                                 {loading ? (
                                   <Loading width="5" height="5" color="#333" />
                                 ) : (
                                   <div className="w-5 h-5" />
                                 )}
                               </div> */}
-                      <span>Claim Payment</span>
-                    </button>
+                          <span>Claim Payment</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              {user?.isAdmin && sale?.isDisputed && (
-                <div className="flex gap-4">
-                  <button
-                    className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 rounded-lg transition-colors"
-                    onClick={handleReleaseFundsToSeller}
-                  >
-                    Release Payment to Seller
-                  </button>
-                  <button
-                    className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4  rounded-lg transition-colors"
-                    onClick={handleClaimPayment}
-                  >
-                    Release Payment to Buyer
-                  </button>
-                </div>
+                  {user?.isAdmin && sale?.isDisputed && (
+                    <div className="flex gap-4">
+                      <button
+                        className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4 rounded-lg transition-colors"
+                        onClick={handleReleaseFundsToSeller}
+                      >
+                        Release Payment to Seller
+                      </button>
+                      <button
+                        className="bg-primary text-secondary hover:bg-primary/90 hover:text-white py-2 px-4  rounded-lg transition-colors"
+                        onClick={handleClaimPayment}
+                      >
+                        Release Payment to Buyer
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </ShadowBox>
           </ShadowBox>
